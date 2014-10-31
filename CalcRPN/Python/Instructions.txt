@@ -1,0 +1,83 @@
+Calc RPN (Python)  Instructions
+# Christer Nilsson 2014
+
+0.  Demo av det fullständiga programmet.
+
+1.  Teorigenomgång
+    input()  print() 
+    [] append() pop() insert() reverse() del
+    stack[-2] stack[-1] 
+    if elif else
+    : i Python
+    while True:
+    for x in lst:
+    def calc(lst):
+    int float
+    assert
+    assert '2 3 +'.split(), ['2','3','+']
+
+2.  Utgå från minimal version.
+    assert run('2'),2
+    assert run('2 3 +'),5
+    assert stk('1'),[1]
+    assert stk('1 2'),[1,2]
+    assert stk('1 2 3 clr'),[]
+
+3.  Lägg till *, - samt /
+    assert run('2 3 4 + *'),14
+    assert run('2 3 -'),-1
+    assert run('5 2 /'),2
+    assert run('5.0 2 /'),2.5
+
+4.  Lägg till kommandon som mekar med stacken
+    assert stk('1 2 3 dup'),[1,2,3,3]
+    assert stk('1 2 3 swp'),[1,3,2]
+    assert stk('1 2 3 rdn'),[3,1,2]
+    assert stk('1 2 3 rev'),[3,2,1]
+    assert stk('1 2 3 drp'),[1,2]
+
+5.  Lägg till xor
+    assert 0 ^ 1, 1
+    assert run('0 0 xor'),0
+    assert run('0 1 xor'),1
+    assert run('1 0 xor'),1
+    assert run('1 1 xor'),0
+    assert run('15 5 xor'),10
+
+6.  Lägg till kvadratrot
+    # import math
+    assert sqrt(25), 5
+    assert run('25 sqrt'),5
+    
+7. Teorigenomgång
+    d = {}
+    d['beppe'] = 12
+    d['noel'] = 11
+    assert d, {'beppe' : 12, 'noel': 11}
+    assert d['beppe'], 12
+    assert d.get('christer'), None
+
+8.  Lägg till möjlighet att skapa egna kommandon
+    assert run(': sq dup *'), ['dup', '*']
+    assert run('5 sq'),25
+
+9.  Lägg till ett kommando som räknar om dollar till kronor
+    # : dollar ...
+    # : kronor ...
+    assert run('1 dollar'),7    
+    assert run('14 kronor'),2
+    
+10. Skapa ett eget kommando som räknar ut hypotenusan
+    Hypotenusan = kvadratroten ur summan av kvadraten på kateterna
+    assert run('3 4 hypotenusa'), 5
+
+11. Lägg till ett internt kommando nim0. Detta kommando hjälper dig att vinna i nim!
+    assert stk('1 2 4 nim0'), stk('2 4 xor 1 4 xor 1 2 xor')
+    assert stk('1 2 4 nim0'), [6,5,3]
+
+12. Lägg till en extra stack. Kan vara bra att ha då stacken inte räcker till
+    assert stk2('1 2 3 push'),[[1,2],[3]]
+    assert stk2('1 2 3 push 4 pop'),[[1,2,4,3],[]]
+
+13. Skapa ett externt kommando nim med hjälp push, pop, dup, rdn, swp, xor.
+    assert stk('1 2 4 nim'), [6,5,3]
