@@ -1,4 +1,4 @@
-GitHub ChristerNilsson / Education / CalcRPN / Ruby / start.rb
+# https://github.com/ChristerNilsson/Education/blob/master/CalcRPN/Ruby/start.rb
 
 def assert a,b
   if a!=b
