@@ -1,5 +1,4 @@
-# Calc RPN (Python) Start
-# Christer Nilsson   2014
+https://github.com/ChristerNilsson/Education/blob/master/CalcRPN/Python/start.py
 
 s = []
 

@@ -1,5 +1,4 @@
-Calc RPN (Ruby)  Instructions
-# Christer Nilsson       2014
+GitHub ChristerNilsson / Education / CalcRPN / Ruby / Instructions.txt
 
 0.  Demo av det fullständiga programmet.
 

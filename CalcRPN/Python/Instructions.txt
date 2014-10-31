@@ -1,5 +1,4 @@
-Calc RPN (Python)  Instructions
-# Christer Nilsson 2014
+github.com/ChristerNilsson/Education/blob/master/CalcRPN/Python/Instructions.txt
 
 0.  Demo av det fullständiga programmet.
 

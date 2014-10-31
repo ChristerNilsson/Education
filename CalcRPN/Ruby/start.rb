@@ -1,5 +1,4 @@
-# Calc RPN (Ruby) Start
-# Christer Nilsson 2014
+GitHub ChristerNilsson / Education / CalcRPN / Ruby / start.rb
 
 def assert a,b
   if a!=b
