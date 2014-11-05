@@ -6,8 +6,6 @@ from fractions import gcd
 
 def ass(a, b):
     assert a == b
-    #if a != b:
-    #    print(a, ' != ', b)
 
 s = []
 
@@ -38,7 +36,7 @@ def run(str):
     return s
 
 ass(2+3, 5)
-ass(2+3, 6)
+#ass(2+3, 6)
 ass(run('1 2'),[1,2])
 #ass(run('1 2 3 dup'), [1,2,3,3])
 #ass(run('1 2 3 dup2'),[1,2,3,2,3])
@@ -75,8 +73,8 @@ ass(run('1 2'),[1,2])
 #ass(run('pi 2 / @pihalva'), [])
 #ass(run('pihalva'), [1.5707963267948966])  # OBS!
 #
-#ass(run('1 2 4 nim1'), [6,5,3]) # Börja med denna lösning
-#ass(run('1 2 4 nim2'), [0,0,1]) # Förbättra därefter till denna.
+#ass(run('1 2 4 nim1'), [6,5,3])
+#ass(run('1 2 4 nim2'), [0,0,1])
 #
 #ass(run('5 fact'), [120])
 #
@@ -124,4 +122,4 @@ ass(run('1 2'),[1,2])
 s = []
 calc(['?'])
 while True:
-    calc(input(str(s) + ' Command: ').split())
+    calc(raw_input(str(s) + ' Command: ').split())
