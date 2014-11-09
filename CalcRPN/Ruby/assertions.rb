@@ -31,7 +31,9 @@ end
 assert 2+3,5   # Always succeeds.
 #assert 2+3,6  # Always fails. Check out the message and the link to the failing assert!
 
+run '', []
 run '2', [2]
+run '1 2', [1,2]
 run '1 2', [1,2]
 
 ## Stack manipulation
