@@ -1,0 +1,184 @@
+github.com/ChristerNilsson/Education/blob/master/CalcRPN/Python/Instructions.txt
+
+0.  Demo av det fullständiga programmet.
+
+1.  Teorigenomgång
+
+    input print
+    [] append pop  
+    stack[-2] stack[-1] 
+    if elif else
+    while True
+    for x in lst:
+    def calc(lst)
+    int / float
+    assert
+    ass('2 3 +'.split(), ['2','3','+'])
+
+2.  Utgå från minimal version.
+
+    ass(run('2'), [2])
+    ass(run('2 3 +'), [5])
+    ass(run('1'), [1])
+    ass(run('1 2'), [1,2])
+    ass(run('1 2 3 clr'), [])
+
+3.  Lägg till * - / ** mod
+
+    ass(run('2 3 4 + *'), [14])
+    ass(run('2 3 -'), [-1])
+    ass(run('5 2 /'), [2])
+    ass(run('5.0 2 /'), [2.5])
+
+4.  Lägg till kommandon som mekar med stacken
+
+    ass(run('1 2 3 dup'), [1,2,3,3])
+    ass(run('1 2 3 dup3'), [1,2,3,1,2,3])
+    ass(run('1 2 3 swp'), [1,3,2])
+    ass(run('1 2 3 rdn'), [3,1,2])
+    ass(run('1 2 3 rup'), [2,3,1])
+    ass(run('1 2 3 rev'), [3,2,1])
+    ass(run('1 2 3 drp'), [1,2])
+
+5.  Lägg till xor
+
+    ass(0 ^ 1, 1)
+    ass(run('0 0 xor'), [0])
+    ass(run('0 1 xor'), [1])
+    ass(run('1 0 xor'), [1])
+    ass(run('1 1 xor'), [0])
+    ass(run('15 5 xor'), [10])
+
+6.  Lägg till kvadratrot, pi och absolutbelopp
+
+    ass(Math.sqrt(25), 5)
+    ass(run('25 sqrt'), [5])
+    ass(run('pi'), [3.14])
+    ass(run('-3 abs'), [3])
+    ass(run('1 5 sqrt + 2 /'),[1.618033988749895]) # golden ratio
+    ass(run('2 1 5 sqrt + /'),[0.6180339887498948]) # golden ratio inverted
+
+7.  Lägg till kommandot punkt (.) som visar stacktoppen. Bra vid felsökning!
+    Lägg till kommandot dubbelpunkt (..) som visar stacken.
+
+8. Teorigenomgång
+
+    d = {}
+    d['beppe'] = 12
+    d['noel'] = 11
+    ass(d, {'beppe': 12, 'noel': 11})
+    ass(d['beppe'], 12)
+    ass(d['christer'], nil)
+
+9.  Lägg till möjlighet att skapa egna kommandon
+
+    ass(run(': sq dup *'), ['dup', '*'])
+    ass(run('5 sq'),25)
+
+10. Lägg till kommandon som räknar om dollar och euros till kronor.
+
+    ass(run('1 dollar'),[7])
+    ass(run('2 euro'),[14])
+
+    Skriv därefter kommandon för omräkning direkt mellan dollar och euro.
+
+    ass(run('1 usd2eur'),[7])
+    ass(run('2 eur2usd'),[14])
+
+11. Skapa ett eget kommando som räknar ut hypotenusan
+    Hypotenusan = kvadratroten ur summan av kvadraten på kateterna
+
+    ass(run('3 4 hypotenusa'), [5.0])
+
+12. Lägg till möjligheten att spara variabler.
+
+    run('pi 2 / @pihalva')
+    ass(run('pihalva'), 1.57)
+
+13. Lägg till ett kommando nim. Detta kommando hjälper dig att vinna i nim!
+
+    ass(run('1 2 4 nim1'), [6,5,3]) # Börja med denna lösning
+    ass(run('1 2 4 nim2'), [0,0,1]) # Förbättra därefter till denna.
+
+14. Lägg till kommandot sum.
+
+    ass(run('0 sum'), [0])
+    ass(run('1 sum'), [1])
+    ass(run('2 sum'), [3])
+    ass(run('100 sum'), [5050])
+
+15. Lägg till kommandot fakultet.
+
+    ass(run('1 fact'), [1])
+    ass(run('2 fact'), [2])
+    ass(run('3 fact'), [6])
+    ass(run('4 fact'), [24])
+    ass(run('5 fact'), [120])
+
+16. Lägg till kommandot för fibonacci.
+
+    ass(run('1 fib'), [1])
+    ass(run('2 fib'), [2])
+    ass(run('3 fib'), [3])
+    ass(run('4 fib'), [5])
+    ass(run('5 fib'), [8])
+    ass(run('6 fib'), [13])
+    ass(run('10 fib'), [89])
+
+17. fib är oerhört långsam. Gör den snabbare!
+
+    ass(run('1 1 10 fibq'),[89.0, 144.0, 0.0])
+    ass(run('1 1 20 fibq'),[10946.0, 17711.0, 0.0])
+    ass(run('1 1 36 fibq'),[24157817.0, 39088169.0, 0.0])
+
+18. Lägg till kommando för primtal och största gemensamma delare.
+
+    ass(run('12 prime'),[false])
+    ass(run('13 prime'),[true])
+    ass(run('12 15 gcd'),[3])
+
+19. Lägg till kommando för seriekopplade och parallellkopplade motstånd.
+    Resistansen för parallellkopplade motstånd är inversen på summan av inverserna.
+
+    ass(run('12 13 serie'), [25])
+    ass(run('2.0 5.0 para'), [1.4285714285714286])
+    ass(run('2.0 5.0 para 12 serie'), [13.4285714285714286])
+
+20. Skriv ett kommando som räknar ut antalet siffror i ett tal.
+
+    ass(run('123 digits'),[3])
+    ass(run('23 fact digits'),[23])
+    ass(run('100 fact digits'),[158])
+
+21. Skapa några kommandon som gör om all in och utmatning (I/O)
+    till binärt, oktalt, decimalt eller hexdecimalt.
+
+    ass(run('255 hex'), 'ff')
+    ass(run('hex 255 dec'), 255)
+    ass(run('15 bin'), '1111')
+    ass(run('hex 111 dec 111 bin 111 oct 111 + + + + dec'), 464)
+    ass(run('3405691582 hex'), 'cafebabe')
+
+22. Man kan iterativt räkna ut roten ur ett tal n, med Newton-Raphson:
+    g = (g + n/g)/2
+    g är gissningen som blir bättre för varje iteration. Börja t ex med g=1.
+
+    ass(run('100 1 iter'), [100, 10.0])
+    ass(run('1000 1 iter'), [1000, 31.622776601684336])
+
+    Skriv ut värden och stacken på lämpligt ställe med . och .. för att se hur det fungerar.
+
+23. En annan metod kallas intervallhalveringsmetoden.
+    Starta med t ex 25 +- 20. Beroende på f(25):s tecken
+    undersökes antingen 15 +- 10 eller 35 +- 10 nästa iteration.
+
+    ass(run('25 20 zero'),[31.62277660168379, -8.881784197001252e-15])
+
+    Denna metod är krångligare och långsammare men kan vara användbar ibland.
+    Den kräver t ex inte att derivatan beräknas.
+
+24. Fibonacci kan användas för att beräkna golden ratio.
+    Kvoten mellan två på varandra följande värden går mot golden ratio.
+    Undvik att anropa fib eftersom det tar för lång tid.
+
+    ass(run('1 1 gr'),[24157817.0, 39088169.0]) # 24157817 / 39088169 = 0.618033988749895
