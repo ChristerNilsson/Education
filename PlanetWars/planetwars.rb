@@ -3,6 +3,46 @@
 # Specification: http://planetwars.aichallenge.org/specification.php
 # Source Code: https://code.google.com/p/ai-contest/source/browse/#svn/trunk/planet_wars
 
+class Player
+  def initialize pw,player
+    @orders = []
+    @pw = pw
+    @player = player
+  end
+  def issue_order(source,dest,ships)
+    @orders << Order.new(source,dest,ships.round)
+  end
+  def orders
+    res = @orders
+    @orders = []
+    res
+  end
+  def planets
+    @pw.planets
+  end
+  def fleets
+    @pw.fleets
+  end
+  def my_planets
+    @pw.my_planets @player
+  end
+  def my_fleets
+    @pw.my_fleets @player
+  end
+  def enemy_fleets
+    @pw.my_fleets @player
+  end
+  def enemy_planets
+    @pw.enemy_planets @player
+  end
+  def not_my_planets
+    @pw.not_my_planets @player
+  end
+  def distance source,dest
+    @pw.distance(source,dest)
+  end
+end
+
 class Fleet
   attr_reader :owner, :num_ships, :source, :dest, :total_trip_length, :turns_remaining
   def initialize(pw,owner, num_ships, source, dest, total_trip_length, turns_remaining)
@@ -55,22 +95,22 @@ end
 
 class Order
   attr_accessor :source,:dest,:num_ships
-  def initialize line
-    arr = line.split
-    @source = arr[0].to_i
-    @dest = arr[1].to_i
-    @num_ships = arr[2].to_i
+  def initialize source,dest,num_ships
+    @source = source
+    @dest = dest
+    @num_ships = num_ships
   end
 end
 
 class PlanetWars
-  attr_reader :planets, :fleets, :player
+  attr_reader :planets, :fleets, :filename
   def initialize(filename = 'txt/state.txt')
+    @filename = filename
     game_state = File.open(filename,'r').read
-    @player = ARGV.size>0 ? ARGV[0].to_i : 0
-    File.open("txt/cmd#{@player}.txt", 'w') {}
+    #@player = ARGV.size>0 ? ARGV[0].to_i : 0
+    #File.open("txt/cmd#{@player}.txt", 'w') {}
     read_state(game_state)
-    @f = File.open("txt/cmd#{@player}.txt",'w')
+    #@f = File.open("txt/cmd#{@player}.txt",'w')
   end
 
   def num_planets
@@ -89,43 +129,43 @@ class PlanetWars
     @fleets[id]
   end
 
-  def my_planets
-    @planets.select {|planet| planet.owner == @player }
+  def my_planets player
+    @planets.select {|planet| planet.owner == player }
   end
 
   def neutral_planets
     @planets.select {|planet| planet.owner == 0 }
   end
 
-  def enemy_planets
-    @planets.select {|planet| planet.owner == 3 - @player }
+  def enemy_planets player
+    @planets.select {|planet| planet.owner == 3 - player }
   end
 
-  def not_my_planets
-    @planets.reject {|planet| planet.owner == @player }
+  def not_my_planets player
+    @planets.reject {|planet| planet.owner == player }
   end
 
-  def my_fleets
-    @fleets.select {|fleet| fleet.owner == @player }
+  def my_fleets player
+    @fleets.select {|fleet| fleet.owner == player }
   end
 
-  def enemy_fleets
-    @fleets.select {|fleet| fleet.owner == 3 - @player }
+  def enemy_fleets player
+    @fleets.select {|fleet| fleet.owner == 3 - player }
   end
 
-  def ships(no)
+  def ships(player)
     res = 0
-    @planets.select {|planet| planet.owner == no }.each { |p| res += p.num_ships }
-    @fleets.select {|fleet| fleet.owner == no }.each { |f| res += f.num_ships }
+    @planets.select {|planet| planet.owner == player }.each { |p| res += p.num_ships }
+    @fleets.select {|fleet| fleet.owner == player }.each { |f| res += f.num_ships }
     res
   end
 
-  def score(no)
+  def score player
     growth = 0
-    @planets.select {|planet| planet.owner == no }.each do |p|
+    @planets.select {|planet| planet.owner == player }.each do |p|
       growth += p.growth_rate
     end
-    "#{ships(no)}/#{growth}"
+    "#{ships(player)}/#{growth}"
   end
 
   def to_s
@@ -151,20 +191,16 @@ class PlanetWars
     @f.puts "#{source} #{destination} #{num_ships}"
   end
 
-  def send_orders
-    @f.close
+  def is_alive(player)
+    ((@planets.select{|p| p.owner == player }).length > 0) || ((@fleets.select{|p| p.owner == player }).length > 0)
   end
 
-  def is_alive(player_id)
-    ((@planets.select{|p| p.owner == player_id }).length > 0) || ((@fleets.select{|p| p.owner == player_id }).length > 0)
+  def planet_count(player)
+    (@planets.select{|p| p.owner == player }).size
   end
 
-  def planet_count(player_id)
-    (@planets.select{|p| p.owner == player_id }).size
-  end
-
-  def fleet_count(player_id) # in active fleets
-    (@fleets.select{|p| p.owner == player_id }).size
+  def fleet_count(player) # in active fleets
+    (@fleets.select{|p| p.owner == player }).size
   end
 
   def read_state(s)
