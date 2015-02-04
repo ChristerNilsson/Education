@@ -6,7 +6,7 @@ require './planetwars.rb'
 
 MAP = 'map1'
 PLAYER1 = 'MyBot'
-PLAYER2 = 'RageBot'
+PLAYER2 = 'Beppe'
 BATCH = 0
 
 TRACE = false

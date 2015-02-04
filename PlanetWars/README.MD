@@ -9,6 +9,13 @@ This is a robot challenge between two players. Your program will automatically s
 This judge is written in Ruby and assumes the robots to be written in Ruby.
 The judge will execute the simulation and visualize the fight.
 
+## Keys
+Right = Next Turn
+Left  = Previous Turn
+Space = Toggle between ships and planet ids.
+Home = Go to First Turn
+End  = Go to Last Turn
+
 ## The Robot
 
 The robot will read a file containing state information. In response it will produce a file with attack orders.
