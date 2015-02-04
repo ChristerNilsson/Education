@@ -10,11 +10,13 @@ This judge is written in Ruby and assumes the robots to be written in Ruby.
 The judge will execute the simulation and visualize the fight.
 
 ## Keys
+```
 Right = Next Turn
 Left  = Previous Turn
 Space = Toggle between ships and planet ids.
 Home = Go to First Turn
 End  = Go to Last Turn
+```
 
 ## The Robot
 
