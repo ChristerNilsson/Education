@@ -1,5 +1,6 @@
 class Beppe < Player
   def do_turn
+    super
     return if my_fleets.length >= 3
     return if my_planets.length == 0
     return if not_my_planets.length == 0
