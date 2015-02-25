@@ -2,7 +2,7 @@
 # http://planetwars.aichallenge.org/visualizer.php?game_id=9559558
 
 require 'chingu'
-require './planetwars.rb'
+require './planet_wars/planetwars.rb'
 
 MAP = 'map1'
 PLAYER1 = 'Elite'
@@ -166,6 +166,7 @@ class GUI < Chingu::Window
     @ym = ys.minmax
     @xw = @xm[1]-@xm[0]
     @yh = @ym[1]-@ym[0]
+    @game_finished = false
   end
 
   def needs_cursor?
@@ -184,7 +185,15 @@ class GUI < Chingu::Window
     # return if n<0 or n == @orders.size
     @current_order = n
     # @pw = PlanetWars.new(MAP_PATH)
-    @current_state = @pw.execute @current_order
+    puts @current_order
+    state = @pw.execute @current_order
+    if state === false
+      @game_finished = true
+      puts 'game finished'
+    #   game finished message
+    else
+      @current_state = state
+    end
     # @judge.execute2 @pw, @orders, @current_order
   end
 
@@ -201,6 +210,7 @@ class GUI < Chingu::Window
   end
 
   def next_order
+    return if @game_finished
     position @current_order + 1
   end
 

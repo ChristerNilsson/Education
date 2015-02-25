@@ -3,137 +3,19 @@
 # Specification: http://planetwars.aichallenge.org/specification.php
 # Source Code: https://code.google.com/p/ai-contest/source/browse/#svn/trunk/planet_wars
 
-class Player
-  attr_accessor :pw
+require File.dirname(__FILE__) + '/./player.rb'
+require File.dirname(__FILE__) + '/./order.rb'
+require File.dirname(__FILE__) + '/./planet.rb'
+require File.dirname(__FILE__) + '/./fleet.rb'
 
-  def initialize(player)
-    @orders = []
-    @player = player
-  end
-
-  def issue_order(source, dest, ships)
-    @orders << Order.new(source, dest, ships.round)
-  end
-
-  def orders
-    res = @orders
-    @orders = []
-    res
-  end
-
-  def planets
-    @pw.planets
-  end
-
-  def fleets
-    @pw.fleets
-  end
-
-  def my_planets
-    @pw.my_planets @player
-  end
-
-  def my_fleets
-    @pw.my_fleets @player
-  end
-
-  def enemy_fleets
-    @pw.my_fleets @player
-  end
-
-  def enemy_planets
-    @pw.enemy_planets @player
-  end
-
-  def not_my_planets
-    @pw.not_my_planets @player
-  end
-
-  def neutral_planets
-    @pw.neutral_planets @player
-  end
-
-  def distance source, dest
-    @pw.distance(source, dest)
-  end
-end
-
-class Fleet
-  attr_reader :owner, :num_ships, :source, :dest, :total_trip_length, :turns_remaining
-
-  def initialize(pw, owner, num_ships, source, dest, total_trip_length, turns_remaining)
-    @owner, @num_ships = owner, num_ships
-    @source=source
-    @dest = dest
-    @src = pw.planets[source]
-    @dst = pw.planets[dest]
-    @total_trip_length = total_trip_length
-    @turns_remaining = turns_remaining
-  end
-
-  def x
-    ((@total_trip_length - @turns_remaining) * @dst.x + @turns_remaining * @src.x) / @total_trip_length
-  end
-
-  def y
-    ((@total_trip_length - @turns_remaining) * @dst.y + @turns_remaining * @src.y) / @total_trip_length
-  end
-
-  def direction
-    Math.atan2(@dst.y-@src.y, @dst.x-@src.x)
-  end
-
-  def decr
-    @turns_remaining -= 1
-  end
-
-  def to_s
-    "F #{owner} #{num_ships} #{source} #{dest} #{total_trip_length} #{turns_remaining}"
-  end
-end
-
-class Planet
-  attr_reader :id, :growth_rate, :x, :y
-  attr_accessor :owner, :num_ships
-
-  def initialize(id, owner, num_ships, growth_rate, x, y)
-    @id, @owner, @num_ships = id, owner, num_ships
-    @growth_rate, @x, @y = growth_rate, x, y
-  end
-
-  def add_ships(n)
-    @num_ships += amt
-  end
-
-  def remove_ships(n)
-    @num_ships -= n
-  end
-
-  def to_s
-    "P #{x} #{y} #{owner} #{num_ships} #{growth_rate}"
-  end
-
-  def distance(destination)
-    Math::hypot(self.x - destination.x, self.y - destination.y)
-  end
-end
-
-class Order
-  attr_accessor :source, :dest, :num_ships
-
-  def initialize source, dest, num_ships
-    @source = source
-    @dest = dest
-    @num_ships = num_ships
-  end
-end
 
 class PlanetWars
-  attr_reader :planets, :fleets, :filename, :steps, :player1, :player2
+  attr_reader :planets, :fleets, :filename, :steps, :max_steps, :player1, :player2
 
   def initialize(filename = 'txt/state.txt', player1, player2)
     @filename = filename
     @steps = []
+    @max_steps = 20
     @player1 = player1
     @player2 = player2
     @player1.pw = self
@@ -238,6 +120,8 @@ class PlanetWars
   end
 
   def execute(step)
+    return false if step > @max_steps || !is_alive(1) || !is_alive(2)
+
     if step >= @steps.length
       while @steps.length <= step
         do_step
