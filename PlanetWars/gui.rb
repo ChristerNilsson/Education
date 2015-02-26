@@ -1,8 +1,9 @@
 class GUI < Chingu::Window
-  def initialize(width=PIXELS, height=PIXELS, fullscreen=false, updateInterval=200, pw=nil)
+  def initialize(width=PIXELS, height=PIXELS, fullscreen=false, updateInterval=200, pw=nil, save_to=nil)
     super width, height, fullscreen, updateInterval
     # @judge = judge
     @pw = pw
+    @save_to = save_to
     # @orders = orders
     @current_order = 0
     @current_state = pw.execute 0
@@ -14,7 +15,8 @@ class GUI < Chingu::Window
         :end => :last,
         [:holding_n, :right] => :next_order,
         [:holding_p, :left] => :prev_order,
-        :space => :toggle
+        :space => :toggle,
+        :p => :play
     }
     self.caption = 'Planet Wars'
     # @judge.execute2 @pw, @orders, @current_order
@@ -39,6 +41,15 @@ class GUI < Chingu::Window
     @view = (@view+1) % 4
   end
 
+  def play
+    Thread.new do
+      while !@game_finished
+        next_order
+        sleep(1)
+      end
+    end
+  end
+
   def position (n)
     # return if n<0 or n == @orders.size
     @current_order = n
@@ -46,13 +57,18 @@ class GUI < Chingu::Window
     puts @current_order
     state = @pw.execute @current_order
     if state === false
-      @game_finished = true
-      puts 'game finished'
-      #   game finished message
+      finish_game
     else
       @current_state = state
     end
     # @judge.execute2 @pw, @orders, @current_order
+  end
+
+  def finish_game
+    @game_finished = true
+    @pw.save_state(@save_to) if @save_to != nil
+    self.input = {}
+    puts 'game finished'
   end
 
   def begin
@@ -60,7 +76,11 @@ class GUI < Chingu::Window
   end
 
   def last
-    position @orders.size-2
+    # i = 0
+    while !@game_finished
+      next_order
+      # i+=1
+    end
   end
 
   def prev_order
@@ -83,18 +103,36 @@ class GUI < Chingu::Window
   end
 
   def draw_scores
-    @text = Chingu::Text.new("#{PLAYER1}: #{@pw.score(1)}", :x => 0, :y => 10, :zorder => 5, :width => 30, :height => 50, :max_width => 300, :max_height => 50, :align => :center, :color => Gosu::Color::RED)
+    @text = Chingu::Text.new("#{PLAYER1}: #{score(1)}", :x => 0, :y => 10, :zorder => 5, :width => 30, :height => 50, :max_width => 300, :max_height => 50, :align => :center, :color => Gosu::Color::RED)
     @text.draw
-    @text = Chingu::Text.new("#{PLAYER2}: #{@pw.score(2)}", :x => 700, :y => 10, :zorder => 5, :width => 30, :height => 50, :max_width => 300, :max_height => 50, :align => :center, :color => Gosu::Color::BLUE)
+    @text = Chingu::Text.new("#{PLAYER2}: #{score(2)}", :x => 700, :y => 10, :zorder => 5, :width => 30, :height => 50, :max_width => 300, :max_height => 50, :align => :center, :color => Gosu::Color::BLUE)
+    @text.draw
+    @text = Chingu::Text.new("Step: #{@current_order}",
+                             :x => 0, :y => self.height - 50,
+                             :zorder => 5,
+                             :width => 30, :height => 50,
+                             :max_width => 300, :max_height => 50,
+                             :align => :center, :color => Gosu::Color::BLUE)
     @text.draw
   end
 
-  def draw_planet planet, pw
+  def score(player)
+    growth = 0
+    @current_state[:planets].select { |planet| planet.owner == player }.each do |p|
+      growth += p.growth_rate
+    end
+    ships = 0
+    @current_state[:planets].select { |planet| planet.owner == player }.each { |p| ships += p.num_ships }
+    @current_state[:fleets].select { |fleet| fleet.owner == player }.each { |f| ships += f.num_ships }
+    "#{ships}/#{growth}"
+  end
+
+  def draw_planet(planet)
     color = Gosu::Color::GRAY
     color = Gosu::Color::RED if planet.owner==1
     color = Gosu::Color::BLUE if planet.owner==2
     fill_circle(_x(planet.x), _y(planet.y), 15 + 5.0*planet.growth_rate, color, 9)
-    draw_circle(_x(planet.x), _y(planet.y), 15 + 5.0*planet.growth_rate, Gosu::Color::BLACK, 9)
+    # draw_circle(_x(planet.x), _y(planet.y), 15 + 5.0*planet.growth_rate, Gosu::Color::BLACK, 9)
     txt = planet.num_ships.to_s if @view == 0
     txt = planet.id if @view == 1
     txt = planet.growth_rate if @view == 2
@@ -103,15 +141,15 @@ class GUI < Chingu::Window
     @text.draw
   end
 
-  def draw_fleet fleet
+  def draw_fleet(fleet)
     return if fleet.turns_remaining == -1
     white = Gosu::Color::rgba(255, 255, 255, 128)
+    color = fleet.owner == 2 ? Gosu::Color::BLUE : Gosu::Color::RED
     sz = 10 + 0.1*fleet.num_ships
     fill_circle(_x(fleet.x), _y(fleet.y), sz, white, 50)
-    draw_circle(_x(fleet.x), _y(fleet.y), sz, Gosu::Color::YELLOW, 50)
+    draw_circle(_x(fleet.x), _y(fleet.y), sz, color, 50)
     txt = fleet.num_ships.to_s
-    color = fleet.owner == 2 ? Gosu::Color::BLUE : Gosu::Color::RED
-    @text = Chingu::Text.new(txt, :x => _x(fleet.x)-50, :y => _y(fleet.y)-12, :zorder => 55, :width => 30, :height => 24, :max_width => 100, :max_height => 24, :align => :center, :color => color)
+    @text = Chingu::Text.new(txt, :x => _x(fleet.x)-50, :y => _y(fleet.y)-12, :zorder => 55, :width => 30, :height => 24, :max_width => 100, :max_height => 24, :align => :center, :color => Gosu::Color::YELLOW)
     @text.draw
     x1 = _x(fleet.x + sz * 0.02 * Math.cos(fleet.direction))
     y1 = _y(fleet.y + sz * 0.02 * Math.sin(fleet.direction))
@@ -121,14 +159,51 @@ class GUI < Chingu::Window
     draw_line x1, y1, color2, x2, y2, color2, 49
   end
 
+  def game_over_message
+    width = 400
+    height = 200
+    @text = Chingu::Text.new('Game Over',
+                             :x => self.width/2 - width,
+                             :y => self.height/2 - height,
+                             :zorder => 100,
+                             :width => width,
+                             :height => height,
+                             :align => :center,
+                             :color => Gosu::Color::YELLOW
+    )
+    @text.draw
+    win_msg=''
+    if score(1) == score(2)
+      win_msg='Same score!'
+    elsif score(1) > score(2)
+      win_msg='Player 1 wins!'
+    elsif score(1) < score(2)
+      win_msg='Player 2 wins!'
+    end
+
+      @text = Chingu::Text.new(win_msg,
+                             :x => self.width/2 - width + 50,
+                             :y => self.height/2 ,
+                             :zorder => 100,
+                             :width => width - 50,
+                             :height => height-50,
+                             :align => :center,
+                             :color => Gosu::Color::YELLOW
+    )
+    @text.draw
+  end
+
   def draw
     fill_rect(Chingu::Rect.new(0, 0, self.width, self.height), Gosu::Color::BLACK)
     draw_scores
     @current_state[:planets].each do |planet|
-      draw_planet planet, @pw
+      draw_planet planet
     end
     @current_state[:fleets].each do |fleet|
       draw_fleet fleet
+    end
+    if @game_finished
+      game_over_message
     end
   end
 end

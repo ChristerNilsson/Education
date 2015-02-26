@@ -2,12 +2,12 @@
 # Inspiration: http://planetwars.aichallenge.org/visualizer.php?game_id=9559558
 # Specification: http://planetwars.aichallenge.org/specification.php
 # Source Code: https://code.google.com/p/ai-contest/source/browse/#svn/trunk/planet_wars
+require 'yaml'
 
 require File.dirname(__FILE__) + '/./player.rb'
 require File.dirname(__FILE__) + '/./order.rb'
 require File.dirname(__FILE__) + '/./planet.rb'
 require File.dirname(__FILE__) + '/./fleet.rb'
-
 
 class PlanetWars
   attr_reader :planets, :fleets, :filename, :steps, :max_steps, :player1, :player2
@@ -15,17 +15,14 @@ class PlanetWars
   def initialize(filename = 'txt/state.txt', player1, player2)
     @filename = filename
     @steps = []
-    @max_steps = 20
+    @max_steps = 200
     @player1 = player1
     @player2 = player2
     @player1.pw = self
     @player2.pw = self
     game_state = File.open(filename, 'r').read
-    #@player = ARGV.size>0 ? ARGV[0].to_i : 0
-    #File.open("txt/cmd#{@player}.txt", 'w') {}
     read_state(game_state)
     @steps << {:fleets => [], :planets => @planets.map { |x| x.clone }}
-    #@f = File.open("txt/cmd#{@player}.txt",'w')
   end
 
   def num_planets
@@ -44,7 +41,7 @@ class PlanetWars
     @fleets[id]
   end
 
-  def my_planets player
+  def my_planets(player)
     @planets.select { |planet| planet.owner == player }
   end
 
@@ -52,19 +49,19 @@ class PlanetWars
     @planets.select { |planet| planet.owner == 0 }
   end
 
-  def enemy_planets player
+  def enemy_planets(player)
     @planets.select { |planet| planet.owner == 3 - player }
   end
 
-  def not_my_planets player
+  def not_my_planets(player)
     @planets.reject { |planet| planet.owner == player }
   end
 
-  def my_fleets player
+  def my_fleets(player)
     @fleets.select { |fleet| fleet.owner == player }
   end
 
-  def enemy_fleets player
+  def enemy_fleets(player)
     @fleets.select { |fleet| fleet.owner == 3 - player }
   end
 
@@ -75,7 +72,7 @@ class PlanetWars
     res
   end
 
-  def score player
+  def score(player)
     growth = 0
     @planets.select { |planet| planet.owner == player }.each do |p|
       growth += p.growth_rate
@@ -92,14 +89,6 @@ class PlanetWars
       s << f.to_s
     end
     return s.join("\n")
-  end
-
-  def distance(source, destination)
-    Math::hypot(source.x - destination.x, source.y - destination.y)
-  end
-
-  def travel_time(source, destination)
-    distance(source, destination).ceil
   end
 
   def issue_order(source, destination, num_ships)
@@ -141,24 +130,24 @@ class PlanetWars
     orders1 = @player1.orders
     orders2 = @player2.orders
 
-    execute_player 1, orders1
-    execute_player 2, orders2
+    send_new_fleets 1, orders1
+    send_new_fleets 2, orders2
 
     update_fleets
     update_planets
   end
 
-  def execute_player(no, orders)
+  def send_new_fleets(no, orders)
     orders.each do |order|
       p1 = order.source
       p2 = order.dest
       num_ships = order.num_ships
       source = @planets[p1]
       dest = @planets[p2]
-      d = distance(source, dest)
-      t = travel_time(source, dest)
+      d = source.distance(dest)
+      t = source.travel_time(dest)
       @fleets << Fleet.new(self, no, num_ships, p1, p2, d, t)
-      source.num_ships -= num_ships
+      # source.num_ships -= num_ships
     end
   end
 
@@ -223,6 +212,14 @@ class PlanetWars
       end
     end
     return 1
+  end
+
+  def save_state(filename)
+    File.open(filename, 'w').write(@steps.to_yaml)
+  end
+
+  def load_state(filename)
+    @steps = YAML.load(File.open(filename, 'r').read)
   end
 
 end

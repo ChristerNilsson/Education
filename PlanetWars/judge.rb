@@ -6,16 +6,16 @@ require './planet_wars/planetwars.rb'
 require './gui.rb'
 
 MAP = 'map1'
-PLAYER1 = 'Elite'
-PLAYER2 = 'Kobylin'
+PLAYER1 = 'Kobylin'
+PLAYER2 = 'RageBot'
 BATCH = 0
 
 TRACE = false
 MAP_PATH = "maps/#{MAP}.txt"
 MAX_TURN = 200
 
-require "./bots/#{PLAYER1}.rb"
-require "./bots/#{PLAYER2}.rb" if PLAYER1 != PLAYER2
+require "./bots/#{PLAYER1.downcase}.rb"
+require "./bots/#{PLAYER2.downcase}.rb" if PLAYER1 != PLAYER2
 
 eval("class Player1 < #{PLAYER1}; end")
 eval("class Player2 < #{PLAYER2}; end")
@@ -148,9 +148,11 @@ end
 if BATCH == 0
   # judge = Judge.new MAP_PATH
   # orders = judge.execute1
+  save_file = './saves/save01.yaml'
   player1 = Player1.new(1)
   player2 = Player2.new(2)
   pw = PlanetWars.new(MAP_PATH, player1, player2)
+  # pw.load_state('./saves/save01.yaml')
   GUI.new(1000, 1000, false, 200, pw).show
 else
   BATCH.times do |i|

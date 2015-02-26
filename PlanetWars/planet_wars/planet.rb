@@ -14,4 +14,8 @@ class Planet
   def distance(destination)
     Math::hypot(self.x - destination.x, self.y - destination.y)
   end
+
+  def travel_time(destination)
+    distance(destination).ceil
+  end
 end

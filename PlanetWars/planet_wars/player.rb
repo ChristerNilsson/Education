@@ -8,7 +8,11 @@ class Player
   end
 
   def issue_order(source, dest, ships)
-    @orders << Order.new(source, dest, ships.round)
+    if ships > source.num_ships
+      ships = source.num_ships
+    end
+    @orders << Order.new(source.id, dest.id, ships.round)
+    source.num_ships -= ships
   end
 
   def orders
@@ -47,9 +51,5 @@ class Player
 
   def neutral_planets
     @pw.neutral_planets @player
-  end
-
-  def distance(source, dest)
-    @pw.distance(source, dest)
   end
 end

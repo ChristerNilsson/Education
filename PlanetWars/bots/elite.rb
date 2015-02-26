@@ -1,11 +1,4 @@
 class Elite < Player
-  def initialize player
-    @orders = []
-    @player = player
-    @sent_to = []
-    @do_turn_counter = 0
-  end
-  
   def do_turn
     # myplanets = my_planets.sort_by {|x| x.num_ships }
     other_planets = not_my_planets.sort_by { |x| x.num_ships }
@@ -16,7 +9,7 @@ class Elite < Player
       other_planets.each do |dest|
         # if (@sent_to.index(dest) == nil)
           if ships_left[source.id] >= dest.num_ships+1
-            issue_order(source.id, dest.id, dest.num_ships+1)
+            issue_order(source, dest, dest.num_ships+1)
             ships_left[source.id] = ships_left[source.id] - (dest.num_ships+1)
             # @sent_to.push(dest)
           end
