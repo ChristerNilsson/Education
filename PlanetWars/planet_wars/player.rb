@@ -49,7 +49,7 @@ class Player
     @pw.neutral_planets @player
   end
 
-  def distance source, dest
+  def distance(source, dest)
     @pw.distance(source, dest)
   end
 end

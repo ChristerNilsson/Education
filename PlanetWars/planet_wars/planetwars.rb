@@ -24,8 +24,7 @@ class PlanetWars
     #@player = ARGV.size>0 ? ARGV[0].to_i : 0
     #File.open("txt/cmd#{@player}.txt", 'w') {}
     read_state(game_state)
-
-    @steps << {:fleets => [], :planets => @planets}
+    @steps << {:fleets => [], :planets => @planets.map { |x| x.clone }}
     #@f = File.open("txt/cmd#{@player}.txt",'w')
   end
 
@@ -120,12 +119,14 @@ class PlanetWars
   end
 
   def execute(step)
-    return false if step > @max_steps || !is_alive(1) || !is_alive(2)
+    return false if step < 0 || step > @max_steps || !is_alive(1) || !is_alive(2)
 
     if step >= @steps.length
       while @steps.length <= step
         do_step
-        @steps << {:fleets => @fleets, :planets => @planets}
+        fleets_clone = @fleets.map { |x| x.clone }
+        planets_clone = @planets.map { |x| x.clone }
+        @steps << {:fleets => fleets_clone, :planets => planets_clone}
       end
       @steps[step]
     else
