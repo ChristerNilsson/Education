@@ -8,14 +8,17 @@ require File.dirname(__FILE__) + '/./player.rb'
 require File.dirname(__FILE__) + '/./order.rb'
 require File.dirname(__FILE__) + '/./planet.rb'
 require File.dirname(__FILE__) + '/./fleet.rb'
+require File.dirname(__FILE__) + '/./player.rb'
 
 class PlanetWars
   attr_reader :planets, :fleets, :filename, :steps, :max_steps, :player1, :player2
+  attr_accessor :is_replay
 
   def initialize(filename = 'txt/state.txt', player1, player2)
     @filename = filename
     @steps = []
-    @max_steps = 200
+    @max_steps = MAX_TURN
+    @is_replay = false
     @player1 = player1
     @player2 = player2
     @player1.pw = self
@@ -23,6 +26,16 @@ class PlanetWars
     game_state = File.open(filename, 'r').read
     read_state(game_state)
     @steps << {:fleets => [], :planets => @planets.map { |x| x.clone }}
+  end
+
+  def self.load_from_file(map_filename, state_filename)
+    p1 = Player.new(1)
+    p2 = Player.new(2)
+
+    pw = PlanetWars.new(map_filename, p1, p2)
+    pw.load_state(state_filename)
+    pw.is_replay = true
+    return pw
   end
 
   def num_planets
@@ -109,6 +122,7 @@ class PlanetWars
 
   def execute(step)
     return false if step < 0 || step > @max_steps || !is_alive(1) || !is_alive(2)
+    return false if @is_replay && step >= @steps.length
 
     if step >= @steps.length
       while @steps.length <= step

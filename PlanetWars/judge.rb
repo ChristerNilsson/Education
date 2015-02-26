@@ -142,21 +142,17 @@ class Judge
 end
 
 
+state_file = './saves/save01.yaml'
 
-#find [78,34,60] # söker bland alla kartfiler efter planeternas num_ships
+def run_from_saved_state
+  #Loading from saved file
+  pw = PlanetWars.load_from_file(MAP_PATH, state_file)
+  GUI.new(1000, 1000, false, 200, pw).show
+end
 
-if BATCH == 0
-  # judge = Judge.new MAP_PATH
-  # orders = judge.execute1
-  save_file = './saves/save01.yaml'
+def run_realtime
   player1 = Player1.new(1)
   player2 = Player2.new(2)
   pw = PlanetWars.new(MAP_PATH, player1, player2)
-  # pw.load_state('./saves/save01.yaml')
   GUI.new(1000, 1000, false, 200, pw).show
-else
-  BATCH.times do |i|
-    judge = Judge.new "maps/map#{i+1}.txt"
-    judge.execute1 i+1
-  end
 end
