@@ -5,10 +5,10 @@ class MyBot < Player
     return if not_my_planets.length == 0
     myplanets = my_planets.sort_by {|x| x.num_ships }
     other_planets = not_my_planets.sort_by {|x| 1.0/(1+x.num_ships) }
-    source = myplanets[-1].id
+    source = myplanets[-1]
     source_ships = myplanets[-1].num_ships
-    dest = other_planets[-1].id
-    if source >= 0 and dest >= 0
+    dest = other_planets[-1]
+    if source.id >= 0 and dest.id >= 0
       num_ships = source_ships / 2
       issue_order(source, dest, num_ships)
     end
