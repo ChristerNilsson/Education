@@ -3,8 +3,8 @@ require './planet_wars/planetwars.rb'
 require './gui.rb'
 
 MAP = 'map1'
-PLAYER1 = 'Kobylin'
-PLAYER2 = 'RageBot'
+PLAYER1 = 'Kobylin2'
+PLAYER2 = 'Kobylin'
 BATCH = 0
 
 TRACE = false

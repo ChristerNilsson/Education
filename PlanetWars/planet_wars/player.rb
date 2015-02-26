@@ -1,4 +1,3 @@
-
 class Player
   attr_accessor :pw
 
@@ -11,6 +10,7 @@ class Player
     if ships > source.num_ships
       ships = source.num_ships
     end
+    return if ships <=0
     @orders << Order.new(source.id, dest.id, ships.round)
     source.num_ships -= ships
   end
@@ -38,7 +38,7 @@ class Player
   end
 
   def enemy_fleets
-    @pw.my_fleets @player
+    @pw.enemy_fleets @player
   end
 
   def enemy_planets

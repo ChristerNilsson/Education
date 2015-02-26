@@ -116,6 +116,17 @@ class GUI < Chingu::Window
     @text.draw
   end
 
+  def num_score(player)
+    growth = 0
+    @current_state[:planets].select { |planet| planet.owner == player }.each do |p|
+      growth += p.growth_rate
+    end
+    ships = 0
+    @current_state[:planets].select { |planet| planet.owner == player }.each { |p| ships += p.num_ships }
+    @current_state[:fleets].select { |fleet| fleet.owner == player }.each { |f| ships += f.num_ships }
+    ships + 2 * growth
+  end
+
   def score(player)
     growth = 0
     @current_state[:planets].select { |planet| planet.owner == player }.each do |p|
@@ -173,17 +184,17 @@ class GUI < Chingu::Window
     )
     @text.draw
     win_msg=''
-    if score(1) == score(2)
+    if num_score(1) == num_score(2)
       win_msg='Same score!'
-    elsif score(1) > score(2)
+    elsif num_score(1) > num_score(2)
       win_msg='Player 1 wins!'
-    elsif score(1) < score(2)
+    elsif num_score(1) < num_score(2)
       win_msg='Player 2 wins!'
     end
 
-      @text = Chingu::Text.new(win_msg,
+    @text = Chingu::Text.new(win_msg,
                              :x => self.width/2 - width + 50,
-                             :y => self.height/2 ,
+                             :y => self.height/2,
                              :zorder => 100,
                              :width => width - 50,
                              :height => height-50,
